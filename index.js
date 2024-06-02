@@ -4,13 +4,14 @@ function fetchPosts() {
     const postsContainer = document.getElementById('posts-container');
     postsContainer.innerHTML = '<p class="loading">Loading...</p>'; // Show loading indicator
 
+    //Frtch user details and post
     Promise.all([
         fetch('https://jsonplaceholder.typicode.com/posts').then(response => response.json()),
         fetch('https://jsonplaceholder.typicode.com/users').then(response => response.json())
     ]).then(([posts, users]) => {
         postsContainer.innerHTML = ''; 
 
-       
+       // Create a usermap lookup
         const userMap = {};
         users.forEach(user => {
             userMap[user.id] = user;
@@ -24,7 +25,7 @@ function fetchPosts() {
                 <p>${post.body}</p>
                 <p><strong>User:</strong> ${userMap[post.userId].name} (${userMap[post.userId].email})</p>
             `;
-            postElement.addEventListener('click', () => displayPostDetails(post.id));
+            postElement.addEventListener('click', () => displayPostDetails(post.id)); //To open post details
             postsContainer.appendChild(postElement);
         });
     }).catch(error => {
@@ -33,12 +34,14 @@ function fetchPosts() {
     });
 }
 
+//Post details
 function displayPostDetails(postId) {
     const modal = document.getElementById('post-modal');
     const postDetails = document.getElementById('post-details');
     modal.style.display = 'block';
     postDetails.innerHTML = '<p class="loading">Loading post details...</p>';
 
+    //Fetch comments by post id
     Promise.all([
         fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`).then(response => response.json()),
         fetch(`https://jsonplaceholder.typicode.com/comments?postId=${postId}`).then(response => response.json())
